@@ -1,4 +1,5 @@
 using GrpcServiceDemo.Services;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddGrpc();
 
+// https://learn.microsoft.com/en-gb/aspnet/core/grpc/troubleshoot?view=aspnetcore-7.0#unable-to-start-aspnet-core-grpc-app-on-macos
+builder.WebHost.ConfigureKestrel(options =>
+{
+    // Setup a HTTP/2 endpoint without TLS.
+    options.ListenLocalhost(5287, o => o.Protocols =
+        HttpProtocols.Http2);
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
